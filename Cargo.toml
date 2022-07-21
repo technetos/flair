@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+  "flair_args",
+  "flair_server",
+  "flair_data",
+]

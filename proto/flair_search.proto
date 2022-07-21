@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.flair.search";
+option java_outer_classname = "FlairSearchProto";
+
+package search;
+
+message FindDocumentByNameRequest {
+  string name = 1;
+}
+
+message FindDocumentByNameResponse {
+  uint64 id = 1;
+  string content = 2;
+}
+
+service Search {
+  rpc FindDocumentByName(FindDocumentByNameRequest) returns (FindDocumentByNameResponse) {}
+}

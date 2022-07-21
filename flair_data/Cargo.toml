@@ -1,0 +1,30 @@
+[package]
+name = "flair_data"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tonic = "0.7"
+prost = "0.10"
+futures-core = "0.3"
+futures-util = "0.3"
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"] }
+tokio-stream = "0.1"
+
+async-stream = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+tracing = "0.1.16"
+tracing-attributes = "0.1"
+tracing-futures = "0.2"
+tracing-subscriber = { version = "0.3", features = ["tracing-log"] }
+
+anyhow = "1.0"
+
+flair_args = { path = "../flair_args" }
+
+[build-dependencies]
+tonic-build = { version = "0.7", features = ["prost"] }
