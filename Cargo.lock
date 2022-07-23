@@ -218,14 +218,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "flair_hyper"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "http",
+ "hyper",
+ "rustserve",
+ "tracing",
+ "tracing-futures",
+ "tracing-subscriber 0.2.25",
+]
+
+[[package]]
 name = "flair_server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "flair_args",
+ "flair_hyper",
  "futures",
  "http",
- "hyper",
  "prost",
  "rustserve",
  "serde",

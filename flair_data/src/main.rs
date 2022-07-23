@@ -5,8 +5,8 @@ pub mod search {
 use search::search_server::{Search, SearchServer};
 use search::{FindDocumentByNameRequest, FindDocumentByNameResponse};
 
-use tonic::{Request, Response, Status};
 use tonic::transport::Server;
+use tonic::{Request, Response, Status};
 
 struct SearchService;
 
@@ -26,14 +26,9 @@ impl Search for SearchService {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let args = flair_args::args();
+    let mut args = flair_args::args().into_iter();
 
-    let mut iter = args.into_iter();
-
-    let server_addr = iter
-        .find(|arg| arg.name == "server_addr")
-        .unwrap()
-        .value;
+    let server_addr = args.find(|arg| arg.name == "server_addr").unwrap().value;
 
     let search_service = SearchService {};
 
@@ -41,7 +36,10 @@ async fn main() -> anyhow::Result<()> {
 
     use std::str::FromStr;
 
-    Server::builder().add_service(service).serve(std::net::SocketAddr::from_str(&server_addr)?).await?;
+    Server::builder()
+        .add_service(service)
+        .serve(std::net::SocketAddr::from_str(&server_addr)?)
+        .await?;
 
     Ok(())
 }
