@@ -30,3 +30,8 @@ internal_server_error!(SearchController);
 pub struct DocumentNotFoundError;
 
 impl<'a> Error<'a, DocumentNotFoundError, 404> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct MissingQueryParamError;
+
+impl<'a> Error<'a, MissingQueryParamError, 400> for SearchController {}

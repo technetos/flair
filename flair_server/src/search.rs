@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use crate::errors::DocumentNotFoundError;
+use crate::errors::MissingQueryParamError;
 use crate::messages::SearchResponse;
 
 use futures::future::BoxFuture;
@@ -40,7 +41,10 @@ impl<'a> Read<'a, SearchResponse> for SearchController {
         params: HashMap<String, String>,
     ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
         Box::pin(async move {
-            let document_name = params.get(&self.clone().id()).unwrap();
+            let document_name = match params.get(&self.clone().id()) {
+                Some(name) => name,
+                _ => return self.error(MissingQueryParamError).await,
+            };
 
             tracing::info!("Searching for {document_name}");
 

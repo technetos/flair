@@ -1,3 +1,6 @@
+//! A tiny url service
+
+#![deny(missing_docs)]
 #![deny(warnings)]
 
 mod errors;
@@ -22,7 +25,7 @@ async fn main() -> anyhow::Result<()> {
 
     let search_service_addr = args
         .find(|arg| arg.name == "search_service_addr")
-        .unwrap()
+        .unwrap_or_else(|| panic!("Missing search_service_addr"))
         .value;
 
     let search_client = Arc::new(SearchClient::connect(search_service_addr).await?);
@@ -31,8 +34,12 @@ async fn main() -> anyhow::Result<()> {
 
     use std::str::FromStr;
 
-    let server_addr =
-        SocketAddr::from_str(&args.find(|arg| arg.name == "server_addr").unwrap().value)?;
+    let server_addr = SocketAddr::from_str(
+        &args
+            .find(|arg| arg.name == "server_addr")
+            .unwrap_or_else(|| panic!("Missing server_addr"))
+            .value,
+    )?;
 
     let routes = Arc::new(vec![Route::new(
         format!("/:version/search/:{}", search_controller.clone().id()),
