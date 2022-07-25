@@ -1,5 +1,14 @@
 # Flair - A tiny url service
 
+# Dependencies
+
+You need `rustserve` in your file system at the same level as your clone of
+`flair`
+
+```sh
+git clone https://github.com/technetos/rustserve.git
+```
+
 # Usage
 
 Run the `flair_data` RPC service
