@@ -5,4 +5,5 @@ members = [
   "flair_server",
   "flair_data",
   "flair_hyper",
+  "flair_auth",
 ]

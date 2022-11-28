@@ -1,6 +1,6 @@
 use crate::search::SearchController;
 
-use rustserve::base::Error;
+use rustserve::Error;
 
 use http::Response;
 

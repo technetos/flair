@@ -1,6 +1,6 @@
 use crate::search::SearchController;
 
-use rustserve::base::Reply;
+use rustserve::Reply;
 
 #[derive(serde::Serialize)]
 pub struct SearchResponse {

@@ -1,5 +1,4 @@
-use rustserve::base::{Error, IdParam, Read, Reply};
-use rustserve::Controller;
+use rustserve::{Error, IdParam, Reply, Controller, Filter, RequestFilterOutcome, ResponseFilterOutcome};
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -34,10 +33,31 @@ impl IdParam for SearchController {
     }
 }
 
-impl<'a> Read<'a, SearchResponse> for SearchController {
-    fn read(
+impl Filter for SearchController {
+    fn filter_request<'a>(
         self: Arc<Self>,
-        _req: http::Request<&'a [u8]>,
+        req: http::Request<&'a [u8]>,
+        params: HashMap<String, String>,
+    ) -> BoxFuture<'a, anyhow::Result<RequestFilterOutcome<'a>>> {
+        Box::pin(async move {
+            Ok(RequestFilterOutcome::Pass(req, params))
+        })
+    }
+
+    fn filter_response<'a>(
+        self: Arc<Self>,
+        res: http::Response<Vec<u8>>,
+    ) -> BoxFuture<'a, anyhow::Result<ResponseFilterOutcome>> {
+        Box::pin(async move {
+            Ok(ResponseFilterOutcome::Pass(res))
+        })
+    }
+}
+
+impl Controller for SearchController {
+    fn get<'a>(
+        self: Arc<Self>,
+        _: http::Request<&'a [u8]>,
         params: HashMap<String, String>,
     ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
         Box::pin(async move {
@@ -65,15 +85,5 @@ impl<'a> Read<'a, SearchResponse> for SearchController {
             })
             .await
         })
-    }
-}
-
-impl Controller for SearchController {
-    fn get<'a>(
-        self: Arc<Self>,
-        req: http::Request<&'a [u8]>,
-        params: HashMap<String, String>,
-    ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
-        self.read(req, params)
     }
 }

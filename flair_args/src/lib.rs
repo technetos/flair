@@ -23,5 +23,5 @@ fn args_impl(input: impl Iterator<Item = String>) -> Vec<Arg> {
 }
 
 pub fn args() -> Vec<Arg> {
-    args_impl(dbg!(std::env::args()))
+    args_impl(std::env::args())
 }

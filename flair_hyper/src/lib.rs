@@ -1,4 +1,7 @@
-#[deny(warnings)]
+//! A hyper based server driver
+
+#![deny(missing_docs)]
+#![deny(warnings)]
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -14,10 +17,8 @@ use tracing::info;
 
 use rustserve::Route;
 
-pub async fn drive(
-    server_addr: SocketAddr,
-    routes: Arc<Vec<Route>>
-) -> anyhow::Result<()> {
+/// A driver for servers on Hyper
+pub async fn drive(server_addr: SocketAddr, routes: Arc<Vec<Route>>) -> anyhow::Result<()> {
     let make_service = make_service_fn(move |_| {
         let routes = routes.clone();
 
@@ -50,4 +51,3 @@ pub async fn drive(
 
     Ok(())
 }
-

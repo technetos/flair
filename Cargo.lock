@@ -196,6 +196,16 @@ name = "flair_args"
 version = "0.1.0"
 
 [[package]]
+name = "flair_auth"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "futures",
+ "http",
+ "rustserve",
+]
+
+[[package]]
 name = "flair_data"
 version = "0.1.0"
 dependencies = [

@@ -9,7 +9,7 @@ mod search;
 
 use search::SearchController;
 
-use rustserve::base::IdParam;
+use rustserve::IdParam;
 use rustserve::Route;
 
 use std::net::SocketAddr;
@@ -41,9 +41,10 @@ async fn main() -> anyhow::Result<()> {
             .value,
     )?;
 
-    let routes = Arc::new(vec![Route::new(
+    let routes = Arc::new(vec![Route::filtered(
         format!("/:version/search/:{}", search_controller.clone().id()),
         search_controller.clone(),
+        vec![search_controller.clone()],
     )]);
 
     // todo: handle these errors
