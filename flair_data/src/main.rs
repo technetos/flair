@@ -3,8 +3,9 @@ pub mod search {
 }
 
 use search::search_server::{Search, SearchServer};
-use search::{FindLinkByNameRequest, FindLinkByNameResponse};
 use search::{CreateLinkRequest, CreateLinkResponse};
+use search::{FindLinkByNameRequest, FindLinkByNameResponse};
+use search::{UpdateLinkRequest, UpdateLinkResponse};
 
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
@@ -36,6 +37,19 @@ impl Search for SearchService {
             name: body.name,
             url: body.url,
             author: body.author,
+        }))
+    }
+
+    async fn update_link(
+        &self,
+        request: Request<UpdateLinkRequest>,
+    ) -> Result<Response<UpdateLinkResponse>, Status> {
+        let body = request.into_inner();
+        Ok(Response::new(UpdateLinkResponse {
+            id: 0,
+            name: body.name.unwrap(),
+            url: body.url.unwrap(),
+            author: body.author.unwrap(),
         }))
     }
 }

@@ -5,13 +5,18 @@ use rustserve::{
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use crate::errors::BadIdError;
 use crate::errors::CreateLinkError;
 use crate::errors::LinkNotFoundError;
 use crate::errors::MissingQueryParamError;
 use crate::errors::PayloadDeserializationError;
+use crate::errors::UpdateLinkError;
+use crate::messages::CreateLinkRequest;
 use crate::messages::CreateLinkResponse;
 use crate::messages::LinkModel;
 use crate::messages::SearchResponse;
+use crate::messages::UpdateLinkRequest;
+use crate::messages::UpdateLinkResponse;
 
 use futures::future::BoxFuture;
 
@@ -41,7 +46,13 @@ impl Filter for SearchController {
         params: HashMap<String, String>,
     ) -> BoxFuture<'a, anyhow::Result<RequestFilterOutcome<'a>>> {
         Box::pin(async move {
-            if req.method() == "POST" && params.contains_key(&self.id()) {
+            if req.method() == "POST" && params.contains_key(&self.clone().id()) {
+                return Ok(RequestFilterOutcome::Fail(
+                    http::Response::builder().status(404).body(vec![])?,
+                ));
+            }
+
+            if req.method() == "PUT" && !params.contains_key(&self.id()) {
                 return Ok(RequestFilterOutcome::Fail(
                     http::Response::builder().status(404).body(vec![])?,
                 ));
@@ -101,8 +112,8 @@ impl Controller for SearchController {
         _: HashMap<String, String>,
     ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
         Box::pin(async move {
-            let (_, payload) = match self.clone().parse(req).await {
-                Ok(req) => req.into_parts(),
+            let payload: CreateLinkRequest = match self.clone().parse(req).await {
+                Ok(req) => req.into_body(),
                 Err(e) => {
                     return self
                         .error(PayloadDeserializationError {
@@ -149,5 +160,76 @@ impl Controller for SearchController {
             })
             .await
         })
+    }
+
+    fn put<'a>(
+        self: Arc<Self>,
+        req: http::Request<&'a [u8]>,
+        params: HashMap<String, String>,
+    ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
+        Box::pin(async move {
+            let id = match u64::from_str_radix(params.get(&self.clone().id()).unwrap(), 10) {
+                Ok(id) => id,
+                Err(e) => {
+                    return self
+                        .error(BadIdError {
+                            error: format!("Bad Id: {e}"),
+                        })
+                        .await
+                }
+            };
+
+            let payload: UpdateLinkRequest = match self.clone().parse(req).await {
+                Ok(req) => req.into_body(),
+                Err(e) => {
+                    return self
+                        .error(PayloadDeserializationError {
+                            error: format!("Invalid Payload: {e}"),
+                        })
+                        .await
+                }
+            };
+
+            tracing::info!("Updating link: {id}");
+
+            let update_link_response = match Arc::make_mut(&mut self.search_service.clone())
+                .update_link(flair_data::UpdateLinkRequest {
+                    id,
+                    url: payload.url,
+                    name: payload.name,
+                    author: payload.author,
+                })
+                .await
+                .map(|r| r.into_inner())
+            {
+                Ok(res) => res,
+                Err(_e) => {
+                    return self
+                        .error(UpdateLinkError {
+                            error: format!(
+                                "Service unavailable: unable to update link at this time"
+                            ),
+                        })
+                        .await
+                }
+            };
+
+            self.reply(UpdateLinkResponse {
+                id: update_link_response.id,
+                model: LinkModel {
+                    url: update_link_response.url,
+                    name: update_link_response.name,
+                    author: update_link_response.author,
+                },
+            }).await
+        })
+    }
+
+    fn delete<'a>(
+        self: Arc<Self>,
+        _: http::Request<&'a [u8]>,
+        _: HashMap<String, String>,
+    ) -> BoxFuture<'a, anyhow::Result<http::Response<Vec<u8>>>> {
+        Box::pin(async move { Ok(http::Response::builder().status(404).body(vec![])?) })
     }
 }

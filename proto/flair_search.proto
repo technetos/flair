@@ -30,7 +30,22 @@ message CreateLinkResponse {
   string author = 4;
 }
 
+message UpdateLinkRequest {
+  uint64 id = 1;
+  optional string name = 2;
+  optional string url = 3;
+  optional string author = 4;
+}
+
+message UpdateLinkResponse {
+  uint64 id = 1;
+  string name = 2;
+  string url = 3;
+  string author = 4;
+}
+
 service Search {
   rpc FindLinkByName(FindLinkByNameRequest) returns (FindLinkByNameResponse) {}
   rpc CreateLink(CreateLinkRequest) returns (CreateLinkResponse) {}
+  rpc UpdateLink(UpdateLinkRequest) returns (UpdateLinkResponse) {}
 }

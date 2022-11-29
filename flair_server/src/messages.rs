@@ -35,3 +35,21 @@ pub struct CreateLinkResponse {
 }
 
 impl<'a> Reply<'a, CreateLinkResponse> for SearchController {}
+
+#[derive(serde::Deserialize)]
+pub struct UpdateLinkRequest {
+    pub name: Option<String>,
+    pub url: Option<String>,
+    pub author: Option<String>,
+}
+
+impl<'a> Parse<'a, UpdateLinkRequest> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct UpdateLinkResponse {
+    pub id: u64,
+    #[serde(flatten)]
+    pub model: LinkModel,
+}
+
+impl<'a> Reply<'a, UpdateLinkResponse> for SearchController {}

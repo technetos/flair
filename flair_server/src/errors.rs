@@ -49,3 +49,17 @@ pub struct CreateLinkError {
 }
 
 impl<'a> Error<'a, CreateLinkError, 503> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct UpdateLinkError {
+    pub error: String,
+}
+
+impl<'a> Error<'a, UpdateLinkError, 503> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct BadIdError {
+    pub error: String,
+}
+
+impl<'a> Error<'a, BadIdError, 400> for SearchController {}
