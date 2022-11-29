@@ -27,11 +27,25 @@ macro_rules! internal_server_error {
 internal_server_error!(SearchController);
 
 #[derive(serde::Serialize)]
-pub struct DocumentNotFoundError;
+pub struct LinkNotFoundError;
 
-impl<'a> Error<'a, DocumentNotFoundError, 404> for SearchController {}
+impl<'a> Error<'a, LinkNotFoundError, 404> for SearchController {}
 
 #[derive(serde::Serialize)]
 pub struct MissingQueryParamError;
 
 impl<'a> Error<'a, MissingQueryParamError, 400> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct PayloadDeserializationError {
+    pub error: String,
+}
+
+impl<'a> Error<'a, PayloadDeserializationError, 400> for SearchController {}
+
+#[derive(serde::Serialize)]
+pub struct CreateLinkError {
+    pub error: String,
+}
+
+impl<'a> Error<'a, CreateLinkError, 503> for SearchController {}

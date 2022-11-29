@@ -3,7 +3,8 @@ pub mod search {
 }
 
 use search::search_server::{Search, SearchServer};
-use search::{FindDocumentByNameRequest, FindDocumentByNameResponse};
+use search::{FindLinkByNameRequest, FindLinkByNameResponse};
+use search::{CreateLinkRequest, CreateLinkResponse};
 
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
@@ -12,14 +13,29 @@ struct SearchService;
 
 #[tonic::async_trait]
 impl Search for SearchService {
-    async fn find_document_by_name(
+    async fn find_link_by_name(
         &self,
-        request: Request<FindDocumentByNameRequest>,
-    ) -> Result<Response<FindDocumentByNameResponse>, Status> {
-        dbg!(request);
-        Ok(Response::new(FindDocumentByNameResponse {
+        request: Request<FindLinkByNameRequest>,
+    ) -> Result<Response<FindLinkByNameResponse>, Status> {
+        let body = request.into_inner();
+        Ok(Response::new(FindLinkByNameResponse {
             id: 0,
-            content: String::from("test content"),
+            name: body.name,
+            url: "".into(),
+            author: "".into(),
+        }))
+    }
+
+    async fn create_link(
+        &self,
+        request: Request<CreateLinkRequest>,
+    ) -> Result<Response<CreateLinkResponse>, Status> {
+        let body = request.into_inner();
+        Ok(Response::new(CreateLinkResponse {
+            id: 0,
+            name: body.name,
+            url: body.url,
+            author: body.author,
         }))
     }
 }

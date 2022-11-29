@@ -41,14 +41,24 @@ async fn main() -> anyhow::Result<()> {
             .value,
     )?;
 
-    let routes = Arc::new(vec![Route::filtered(
-        format!("/:version/search/:{}", search_controller.clone().id()),
-        search_controller.clone(),
-        vec![search_controller.clone()],
-    )]);
+    let mut routes = vec![];
+
+    for path in generate_paths("/:version/search", search_controller.clone()) {
+        routes.push(Route::filtered(
+            path,
+            search_controller.clone(),
+            vec![search_controller.clone()],
+        ))
+    }
 
     // todo: handle these errors
-    let _ = flair_hyper::drive(server_addr, routes).await;
+    let _ = flair_hyper::drive(server_addr, Arc::new(routes)).await;
 
     Ok(())
+}
+
+fn generate_paths(base_path: impl Into<String>, controller: Arc<dyn IdParam>) -> Vec<String> {
+    let s = base_path.into();
+    let path_with_id = format!("{s}/:{}", controller.id());
+    vec![s, path_with_id]
 }
