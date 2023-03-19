@@ -12,9 +12,7 @@ use crate::HostInfo;
 use crate::NewServiceInfo;
 use crate::ServiceInfo;
 
-impl<'a> ServiceRequest<'a, (), ApiResponse<ServiceInfo>>
-    for NameServiceClient
-{
+impl<'a> ServiceRequest<'a, (), ApiResponse<ServiceInfo>> for NameServiceClient {
     fn method() -> http::Method {
         http::Method::GET
     }
@@ -26,9 +24,7 @@ impl<'a> ServiceRequest<'a, (), ApiResponse<ServiceInfo>>
     }
 }
 
-impl<'a> ServiceRequest<'a, NewServiceInfo, ApiResponse<ServiceInfo>>
-    for NameServiceClient
-{
+impl<'a> ServiceRequest<'a, NewServiceInfo, ApiResponse<ServiceInfo>> for NameServiceClient {
     fn method() -> http::Method {
         http::Method::POST
     }
@@ -53,7 +49,6 @@ where
             Ok(format!("{cert_root_path}/{service_name}/rsa/end.chain"))
         })
     }
-
 }
 
 impl<'a, Req, Res> rustserve::ServiceInfo<'a, Req, Res> for NameServiceClient {
@@ -98,11 +93,8 @@ impl NameServiceClient {
             &path,
             NewServiceInfo {
                 name,
-                host_info: HostInfo {
-                    ip,
-                    port,
-                }
-            }
+                host_info: HostInfo { ip, port },
+            },
         )
         .await
     }
