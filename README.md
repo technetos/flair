@@ -13,5 +13,5 @@ git clone https://github.com/technetos/rustserve-platform.git
 
 ```sh
 cd flair
-cargo r --release -- -server_addr=127.0.0.1:3000
+cargo r --release -- -server_addr=localhost:3053
 ```
